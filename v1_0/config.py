@@ -1,0 +1,3 @@
+API_URL = 'https://api.adsabs.harvard.edu/v1'
+AUTHENTICATED_USER_ACCESS_TOKEN = ''
+BUMBLEBEE_ANONYMOUS_USER_ACCESS_TOKEN = ''
