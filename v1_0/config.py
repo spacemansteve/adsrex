@@ -11,9 +11,6 @@ AUTHENTICATED_USER_EMAIL = 'tester@ads'
 AUTHENTICATED_USER_ACCESS_TOKEN = ''
 
 
-# Access token given to any 'anonymous' bumblebee user
-BUMBLEBEE_ANONYMOUS_USER_ACCESS_TOKEN = ''
-
 
 # Those values are necessary only to test 'getting of the access token'
 # Orcid service does this inside browser, redirects the user to the correct
