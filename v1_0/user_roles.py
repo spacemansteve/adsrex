@@ -1,5 +1,6 @@
 import requests
 import copy
+import logging
 from . import config
 
 
@@ -16,6 +17,9 @@ class AnonymousUser(object):
     
     def put(self, *args, **kwargs):
         return requests.put(*self.update_args(args), **self.update_kwargs(kwargs))
+    
+    def options(self, *args, **kwargs):
+        return requests.options(*self.update_args(args), **self.update_kwargs(kwargs))
     
     def update_args(self, args):
         args = list(args)
@@ -54,7 +58,12 @@ class AuthenticatedUser(AnonymousUser):
 class BumblebeeAnonymousUser(AnonymousUser):
     def __init__(self):
         AnonymousUser.__init__(self)
-        self.access_token = config.BUMBLEBEE_ANONYMOUS_USER_ACCESS_TOKEN
+        # dont want to fail tests 
+        try:
+            r = self.get('/accounts/bootstrap')
+            self.access_token = r.json()['access_token']
+        except:
+            logging.error('Failed getting access_token for Bumblebee user!')
 
 
             

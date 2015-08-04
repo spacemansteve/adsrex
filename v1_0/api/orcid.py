@@ -2,13 +2,13 @@ from ..user_roles import anonymous_user, authenticated_user, bumblebee_user
 import requests
 import copy
 
-def test_anonymous_user():
+def test_access():
     for x in ['/orcid/exchangeOAuthCode', 
               ]:
         r = anonymous_user.get(x)
         assert r.status_code == 401 # right now it throws 500 (probably error with orcid service)
 
-def test_bumblebee_user():
+def test_orcid_workflow():
     # getting the 'exchange token' involves logging into orcid
     # and getting the code from the url redirect; but it seems
     # that ORCID allows us to get the code from the endpoint; 
@@ -233,3 +233,16 @@ def extract_works(orcid_data):
             x['source']['source-client-id']['path'] == authenticated_user.get_config('ORCID_CLIENT_ID'):
             out.append(x)
     return out
+
+
+def test_crossx_headers():
+    for endpoint in [
+            '/orcid/0000-0001-9886-2511/orcid-works',
+            '/orcid/0000-0001-9886-2511/orcid-profile'
+            ]:
+        r = bumblebee_user.options(endpoint)
+        
+        assert 'access-control-allow-origin' in r.headers
+        assert 'ui.adsabs.harvard.edu' in r.headers['access-control-allow-origin']
+        assert 'access-control-allow-headers' in r.headers
+        assert 'Orcid-Authorization' in r.headers['access-control-allow-headers']

@@ -7,6 +7,7 @@ API_URL = 'http://adsws-staging.elasticbeanstalk.com/v1'
 # you can replace it with your own 
 
 # e.g. access token to tester@ads (on staging)
+AUTHENTICATED_USER_EMAIL = 'tester@ads'
 AUTHENTICATED_USER_ACCESS_TOKEN = ''
 
 
