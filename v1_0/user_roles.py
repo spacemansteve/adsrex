@@ -1,4 +1,5 @@
 import requests
+import copy
 from . import config
 
 
@@ -12,6 +13,9 @@ class AnonymousUser(object):
     
     def post(self, *args, **kwargs):
         return requests.post(*self.update_args(args), **self.update_kwargs(kwargs))
+    
+    def put(self, *args, **kwargs):
+        return requests.put(*self.update_args(args), **self.update_kwargs(kwargs))
     
     def update_args(self, args):
         args = list(args)
@@ -35,6 +39,11 @@ class AnonymousUser(object):
             kwargs['headers'] = headers
         return kwargs
     
+    def get_config(self, name):
+        if hasattr(config, name):
+            return copy.deepcopy(getattr(config, name))
+        raise Exception('Non-existent config value: %s' % name)
+
 
 class AuthenticatedUser(AnonymousUser):
     def __init__(self):
