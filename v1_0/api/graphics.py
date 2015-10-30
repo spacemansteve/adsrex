@@ -1,6 +1,20 @@
-from ..user_roles import anonymous_user, authenticated_user, bumblebee_user
+"""
+Integration tests for the Graphics service
+"""
 
-bibcode = '1995ApJ...447L..37W'
+from base import TestBase
+
+TEST_BIBCODE = '1995ApJ...447L..37W'
+
+class TestGraphics(TestBase):
+    """
+    Base class for testing the graphics service
+    """
+    def test_get_graphics(self):
+        """
+        Tests the get end point of graphics
+        """
+        self.anonymous_user.get('/graphics/')
 
 def test_anonymous_user():
     # Try to get graphics info for an existing bibcode
