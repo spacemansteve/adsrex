@@ -14,7 +14,7 @@ class TestGraphics(TestBase):
         Generic setup. Updated to include a test bibcode.
         """
         super(TestGraphics, self).setUp()
-        self.test_bibcode = '1995ApJ...447L..37W'
+        self.test_bibcode = '2014ApJS..214...17J'
 
     def test_unauthenticated_get_graphics(self):
         """
@@ -34,7 +34,7 @@ class TestGraphics(TestBase):
             msg='This is a non-existing bibcode, it should return a 401 not {}'.format(r.status_code)
         )
 
-    def helper_test_authenticated_user_get(self, user=None):
+    def helper_authenticated_user_get(self, user=None):
         """
         Check that getting graphics from GET end point works as expected.
 
@@ -44,7 +44,11 @@ class TestGraphics(TestBase):
         url = '/graphics/{}'.format(self.test_bibcode)
 
         r = user.get(url)
-        self.assertEqual(r.status_code, 200)
+        self.assertEqual(
+            r.status_code,
+            200,
+            msg='Request failed for unexpected reason: {}'.format(r.json())
+        )
 
         # Now test what was sent back
         data = r.json()
@@ -71,13 +75,14 @@ class TestGraphics(TestBase):
         )
 
         expected_attr = [u'images', u'figure_caption', u'figure_label', u'figure_id']
-        self.assertListEqual(
-            data['figures'][0].keys(),
-            expected_attr,
+        actual_attr = data['figures'][0].keys()
+        self.assertEqual(
+            actual_attr.sort(),
+            expected_attr.sort(),
             msg='A figure in the list of figures should have expected attributes. Expected {} got {}'
                 .format(expected_attr, data['figures'][0].keys())
         )
-        #
+
         self.assertIsInstance(
             data['figures'][0]['images'],
             list,
@@ -108,10 +113,10 @@ class TestGraphics(TestBase):
         Tests the graphics GET end point for all types of authenticated users. They should all receive the same
         response, otherwise something is wrong.
         """
-        self.helper_test_authenticated_user_get(user=self.authenticated_user)
-        self.helper_test_authenticated_user_get(user=self.bumblebee_user)
+        self.helper_authenticated_user_get(user=self.authenticated_user)
+        self.helper_authenticated_user_get(user=self.bumblebee_user)
 
-    def helper_test_authenticated_user_non_existent_bibcode(self, user=None):
+    def helper_authenticated_user_non_existent_bibcode(self, user=None):
         """
         Check that the graphics GET end point works as expected if there is no corresponding bibcode. This is a helper
         function that allows it to be run on a give user.
@@ -131,5 +136,5 @@ class TestGraphics(TestBase):
         """
         A non-existing bibcode should still return a 200
         """
-        self.helper_test_authenticated_user_non_existent_bibcode(user=self.anonymous_user)
-        self.helper_test_authenticated_user_non_existent_bibcode(user=self.bumblebee_user)
+        self.helper_authenticated_user_non_existent_bibcode(user=self.authenticated_user)
+        self.helper_authenticated_user_non_existent_bibcode(user=self.bumblebee_user)

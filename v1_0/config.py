@@ -13,7 +13,8 @@ API_VERSION = 'v1'
 
 # e.g. access token to tester@ads (on staging)
 AUTHENTICATED_USER_EMAIL = 'tester@ads'
-AUTHENTICATED_USER_ACCESS_TOKEN = ''
+# This token is OK to commit, only for the test cluster - not important
+AUTHENTICATED_USER_ACCESS_TOKEN = 'Jh5ehrzFtEl2OCoF1DEMCU1ubJlASqlyfKgwGoQ4'
 
 # Those values are necessary only to test 'getting of the access token'
 # Orcid service does this inside browser, redirects the user to the correct
