@@ -34,12 +34,7 @@ class TestGraphics(TestBase):
             msg='This is a non-existing bibcode, it should return a 401 not {}'.format(r.status_code)
         )
 
-    def test_authenticated_user(self):
-        """
-
-        :return:
-        """
-    def helper_test_authenticated_user_get(self, user):
+    def helper_test_authenticated_user_get(self, user=None):
         """
         Check that getting graphics from GET end point works as expected.
 
@@ -116,7 +111,7 @@ class TestGraphics(TestBase):
         self.helper_test_authenticated_user_get(user=self.authenticated_user)
         self.helper_test_authenticated_user_get(user=self.bumblebee_user)
 
-    def helper_test_authenticated_user_non_existent_bibcode(self, user):
+    def helper_test_authenticated_user_non_existent_bibcode(self, user=None):
         """
         Check that the graphics GET end point works as expected if there is no corresponding bibcode. This is a helper
         function that allows it to be run on a give user.
