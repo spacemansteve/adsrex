@@ -2,6 +2,7 @@
 Integration tests for the Recommender service
 """
 
+import unittest
 from base import TestBase
 
 
@@ -14,7 +15,7 @@ class TestRecommender(TestBase):
         Generic setup. Updated to include a test bibcode.
         """
         super(TestRecommender, self).setUp()
-        self.test_bibcode = '2010MNRAS.409.1719J'
+        self.test_bibcode = 'a'
 
     def test_anonymous_user_existing_bibcode(self):
         """
@@ -51,14 +52,19 @@ class TestRecommender(TestBase):
             r.status_code,
             200,
             msg='We should get 200 for an existing bibcode ({}), but get: {}, {}'
-                .format(self.test_bibcode, r.status_code, r.json())
+                .format(self.test_bibcode, r.status_code, r.text)
         )
 
         data = r.json()
+        self.assertIn(
+            'paper',
+            data,
+            msg='Keyword: "paper" not in data: {}'.format(data)
+        )
         self.assertEqual(
             data['paper'],
             self.test_bibcode,
-            msg='Response data structure should contain the bibcode, but does not: {}'.format(data['paper'])
+            msg='Response data structure should contain the bibcode, but does not: {}'.format(data)
         )
 
         self.assertIn(
@@ -90,6 +96,7 @@ class TestRecommender(TestBase):
                 msg='Expected {} != Actual {}'.format(expected_attr, actual_attr)
             )
 
+    # @unittest.skip('Skip until stub data is acquired.')
     def test_authenticated_user_get(self):
         """
         Authenaticated users should be able to use the get end point, and the response should be as we expect
@@ -102,11 +109,11 @@ class TestRecommender(TestBase):
         Test that an authenticated user can use the get end point for a non-existent bibcode, but that the response
         tells us the bibcode does not exist
         """
-        r = self.authenticated_user.get('/recommender/foo')
+        r = self.authenticated_user.get('/recommender/foobar')
         self.assertEqual(
             r.status_code,
             200,
-            msg='Non-existent bibcode should return 200, but returns: {}, {}'.format(r.status_code, r.json())
+            msg='Non-existent bibcode should return 200, but returns: {}, {}'.format(r.status_code, r.text)
         )
         self.assertIn(
             'Error',
