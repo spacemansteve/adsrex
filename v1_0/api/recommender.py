@@ -96,7 +96,6 @@ class TestRecommender(TestBase):
                 msg='Expected {} != Actual {}'.format(expected_attr, actual_attr)
             )
 
-    # @unittest.skip('Skip until stub data is acquired.')
     def test_authenticated_user_get(self):
         """
         Authenaticated users should be able to use the get end point, and the response should be as we expect

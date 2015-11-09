@@ -139,7 +139,7 @@ class TestCore(TestBase):
                 # "/biblib/transfer/<string:library>",
                 #
                 # "/citation_helper/resources", # is this necessary?
-                # "/citation_helper/",
+                "/citation_helper/",
                 #
                 # "/export/resources",
                 "/export/endnote",
@@ -160,10 +160,10 @@ class TestCore(TestBase):
                 "/oauth/ping/",
                 "/oauth/info/",
 
-                # "/orcid/exchangeOAuthCode",
+                "/orcid/exchangeOAuthCode",
                 # "/orcid/resources",
-                # "/orcid/<orcid_id>/orcid-profile",
-                # "/orcid/<orcid_id>/orcid-works",
+                "/orcid/<orcid_id>/orcid-profile",
+                "/orcid/<orcid_id>/orcid-works",
                 #
                 # "/recommender/resources",
                 "/recommender/<string:bibcode>",
