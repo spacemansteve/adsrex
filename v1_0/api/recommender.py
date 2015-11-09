@@ -2,7 +2,6 @@
 Integration tests for the Recommender service
 """
 
-import unittest
 from base import TestBase
 
 
