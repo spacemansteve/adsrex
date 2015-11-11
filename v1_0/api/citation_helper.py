@@ -14,7 +14,7 @@ class TestCitationHelper(TestBase):
         Generic setup. Updated to include a test bibcode.
         """
         super(TestCitationHelper, self).setUp()
-        self.test_bibcodes = ['1980ApJS...44..169S', '1980ApJS...44..193S']
+        self.test_bibcodes = ['a', 'b']
 
     def test_anonymous_user_existing_bibcode(self):
         """
