@@ -128,28 +128,22 @@ class TestCore(TestBase):
         r = self.anonymous_user.get(self.anonymous_user.api_base + '/resources')
         resources = r.json()
 
-        # check for presence of services in ['adsws.api']['endpoints']
         for endpoint in [
-
-                # "/biblib/resources",
-                # "/biblib/libraries",
-                # "/biblib/permissions/<string:library>",
-                # "/biblib/libraries/<string:library>",
-                # "/biblib/documents/<string:library>",
-                # "/biblib/transfer/<string:library>",
+                "/biblib/libraries",
+                "/biblib/permissions/<string:library>",
+                "/biblib/libraries/<string:library>",
+                "/biblib/documents/<string:library>",
+                "/biblib/transfer/<string:library>",
                 #
-                # "/citation_helper/resources", # is this necessary?
                 "/citation_helper/",
                 #
-                # "/export/resources",
                 "/export/endnote",
                 "/export/aastex",
                 "/export/bibtex",
                 #
-                # "/graphics/resources",
                 "/graphics/<string:bibcode>",
                 #
-                # "/metrics/",
+                "/metrics/",
                 "/metrics/<string:bibcode>",
 
                 "/oauth/authorize",
@@ -161,14 +155,11 @@ class TestCore(TestBase):
                 "/oauth/info/",
 
                 "/orcid/exchangeOAuthCode",
-                # "/orcid/resources",
                 "/orcid/<orcid_id>/orcid-profile",
                 "/orcid/<orcid_id>/orcid-works",
                 #
-                # "/recommender/resources",
                 "/recommender/<string:bibcode>",
                 #
-                # "/search/resources",
                 "/search/bigquery",
                 "/search/status",
                 "/search/query",
@@ -182,15 +173,12 @@ class TestCore(TestBase):
                 "/vault/configuration/<key>",
                 "/vault/query2svg/<queryid>",
                 "/vault/query/<queryid>",
-
-                # "/vis/author-network",
-                # "/vis/paper-network",
-                # "/vis/word-cloud",
-                # "/vis/resources",
+                #
+                "/vis/author-network",
+                "/vis/paper-network",
+                "/vis/word-cloud",
         ]:
             self.assertIn(endpoint, resources['adsws.api']['endpoints'])
-
-        self.fail('Have not added all end points yet')
 
     def test_bootstrap(self):
         """
