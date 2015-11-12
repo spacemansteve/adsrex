@@ -299,3 +299,71 @@ class TestAuthorNetwork(TestBase):
         """
         self.helper_check_author_network(user=self.authenticated_user)
         self.helper_check_author_network(user=self.bumblebee_user)
+
+
+class TestWordCloud(TestBase):
+    """
+    Base class for testing the word-cloud end point of the visualisation services
+    """
+    def setUp(self):
+        """
+        Generic setup. Updated to include a test bibcode.
+        """
+        super(TestWordCloud, self).setUp()
+        self.test_params = dict(query=['{"q": "author:\\"Elliott, J.\\""}'])
+
+    def test_get_request_unauthorized_user(self):
+        """
+        Show that you cannot get a word-cloud for an unauthorized user
+        """
+        r = self.anonymous_user.post('/vis/paper-network', params=self.test_params)
+        self.assertEqual(
+            r.status_code,
+            401,
+            msg='We should get a 401 for unauthozied access, but get: {}, {}'
+                .format(r.status_code, r.json())
+        )
+
+    def helper_check_word_cloud(self, user=None):
+        """
+        Tests the get end point of the word-cloud for the visualisation services for an authorized user.
+        :param user: the user to run the test on
+        :type user: object
+        """
+        r = user.post('/vis/word-cloud', params=self.test_params)
+
+        # We should get a 200 back
+        self.assertEqual(
+            r.status_code,
+            200,
+            msg='We should get 200 response but get: {}, {}'.format(r.status_code, r.json())
+        )
+
+        data = r.json()
+        self.assertIsInstance(
+            data,
+            dict,
+            msg='Response should be dict type, but is: {}, {}'.format(type(data), data)
+        )
+
+        expected_attr = ['idf', 'record_count', 'total_occurrences']
+        for entry in data.values():
+            self.assertIsInstance(
+                entry,
+                dict,
+                msg='Each value of data should be dict, but is: {}, {}'.format(type(entry), entry)
+            )
+
+            actual_attr = entry.keys()
+            self.assertEqual(
+                expected_attr.sort(),
+                actual_attr.sort(),
+                msg='Expected entry to have attributes {}, but has {}'.format(expected_attr, actual_attr)
+            )
+
+    def test_get_request_authorized_user(self):
+        """
+        Tests the get end point of the word-cloud for the visualisation services for a set of authorized users.
+        """
+        self.helper_check_word_cloud(user=self.authenticated_user)
+        self.helper_check_word_cloud(user=self.bumblebee_user)
