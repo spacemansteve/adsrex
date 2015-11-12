@@ -2,6 +2,7 @@
 Integration tests for the visualisation services service
 """
 
+import json
 from base import TestBase
 
 
@@ -34,7 +35,6 @@ class TestPaperNetwork(TestBase):
         :param user: the user to run the test on
         :type user: object
         """
-        import json
         r = user.post('/vis/paper-network', data=json.dumps(self.test_params), headers={'Content-Type': 'application/json'})
 
         self.assertEqual(
@@ -167,5 +167,138 @@ class TestPaperNetwork(TestBase):
             )
 
     def test_get_request_authorized_user(self):
+        """
+        Tests the get end point of the paper-network for the visualisation services for a set of authorized users.
+        """
         self.helper_check_paper_network(user=self.authenticated_user)
         self.helper_check_paper_network(user=self.bumblebee_user)
+
+
+class TestAuthorNetwort(TestBase):
+    """
+    Base class for testing the paper-network end point of the visualisation services
+    """
+    def setUp(self):
+        """
+        Generic setup. Updated to include a test bibcode.
+        """
+        super(TestPaperNetwork, self).setUp()
+        self.test_params = dict(query=['{"q": "author:\\"Elliott, J.\\""}'])
+
+    def test_get_reqest_unauthorized_user(self):
+        """
+        Show that you cannot get an author-network for an unauthorized user
+        """
+        # Get the author network
+        r = self.anonymous_user.post('/vis/author-network', params=self.test_params)
+        # We should get a 401 back
+        self.assertEqual(
+            r.status_code,
+            401,
+            msg='We should get a 401 for an unauthorized user, but get: {}, {}'.format(r.status_code, r.json())
+        )
+
+    def helper_check_author_network(self, user=None):
+        """
+        Tests the get end point of the author-network for the visualisation services for an authorized user.
+        :param user: the user to run the test on
+        :type user: object
+        """
+        r = user.post('/vis/author-network', params=self.test_params)
+
+        self.assertEqual(
+            r.status_code,
+            200,
+            msg='Response should be a 200 for get request of authorized user, but get: {}, {}'
+                .format(r.status_code, r.json())
+        )
+
+        data = r.json()
+        self.assertIsInstance(
+            data,
+            dict,
+            msg='Response should be type dict, but is type: {}, {}'.format(type(data), data)
+        )
+
+        expected_keys = ['msg', 'data']
+        actual_keys = data.keys()
+        self.assertEqual(
+            expected_keys.sort(),
+            actual_keys.sort(),
+            msg='We expect the following keys in data: {}, but have: {}'.format(expected_keys, actual_keys)
+        )
+
+        expected_attr = [u'bibcode_dict', u'root', u'link_data']
+        actual_attr = data['data'].keys()
+        self.assertEqual(
+            expected_attr.sort(),
+            actual_attr.sort(),
+            msg='We expect the following attributes {} but have: {}'.format(expected_attr, actual_attr)
+        )
+
+        expected_attr = ['read_count', 'title', 'citation_count', 'authors']
+        for bibcode, bibinfo in data['data']['bibcode_dict'].items():
+            self.assertEqual(
+                len(bibcode),
+                19,
+                msg='Bibcodes should have 19 characters, but it has: {} [bibcode]'.format(len(bibcode), bibcode)
+            )
+            self.assertIsInstance(
+                bibinfo,
+                dict,
+                msg='Bibcode information should be type dict, but is type: {}, {}'.format(type(bibinfo), bibinfo)
+            )
+
+            actual_attr = bibinfo.keys()
+            self.assertEqual(
+                expected_attr.sort(),
+                actual_attr.sort(),
+                msg='BibInfo should have attributes {}, but has: {}'.format(expected_attr, actual_attr)
+            )
+
+        expected_attr = ['name', 'children']
+        actual_attr = data['data']['root']
+        self.assertEqual(
+            expected_attr.sort(),
+            actual_attr.sort(),
+            msg='Root entry should have attributes {}, but has: {}'.format(expected_attr, actual_attr)
+        )
+
+        children = data['data']['root']['children']
+        self.assertIsInstance(
+            children,
+            list,
+            msg='Children of root should be type list, but is type: {}, {}'.format(type(children), children)
+        )
+        # Only check that the first entry has the expected attributes
+        expected_attr = ['name', 'children']
+        actual_attr = children[0]
+        self.assertEqual(
+            expected_attr.sort(),
+            actual_attr.sort(),
+            msg='First entry should have attributes {}, but has {}'.format(expected_attr, actual_attr)
+        )
+
+        link_data = data['data']['link_data']
+        self.assertIsInstance(
+            link_data,
+            list,
+            msg='link_data should be type list, but is type: {}, {}'.format(type(link_data), link_data)
+        )
+        for item in link_data:
+            self.assertIsInstance(
+                item,
+                list,
+                msg='Each item of link_data should be a list, but this is type: {}, {}'.format(type(item), item)
+            )
+            self.assertTrue(
+                all(isinstance(int(x), int) for x in item),
+                msg='Each item of link_data should contain a list of numbers, but does not: {}'.format(item)
+            )
+
+    def test_get_request_authorized_user(self):
+        """
+        Tests the get end point of the paper-network for the visualisation services for a set of authorized users.
+        """
+        self.helper_check_author_network(user=self.authenticated_user)
+        self.helper_check_author_network(user=self.bumblebee_user)
