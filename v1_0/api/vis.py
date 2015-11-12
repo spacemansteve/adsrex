@@ -316,7 +316,7 @@ class TestWordCloud(TestBase):
         """
         Show that you cannot get a word-cloud for an unauthorized user
         """
-        r = self.anonymous_user.post('/vis/paper-network', params=self.test_params)
+        r = self.anonymous_user.post('/vis/author-network', data=json.dumps(self.test_params), headers={'Content-Type': 'application/json'})
         self.assertEqual(
             r.status_code,
             401,
@@ -330,7 +330,7 @@ class TestWordCloud(TestBase):
         :param user: the user to run the test on
         :type user: object
         """
-        r = user.post('/vis/word-cloud', params=self.test_params)
+        r = user.post('/vis/word-cloud', data=json.dumps(self.test_params), headers={'Content-Type': 'application/json'})
 
         # We should get a 200 back
         self.assertEqual(
