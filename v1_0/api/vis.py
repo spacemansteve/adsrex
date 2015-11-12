@@ -174,7 +174,7 @@ class TestPaperNetwork(TestBase):
         self.helper_check_paper_network(user=self.bumblebee_user)
 
 
-class TestAuthorNetwort(TestBase):
+class TestAuthorNetwork(TestBase):
     """
     Base class for testing the paper-network end point of the visualisation services
     """
@@ -182,16 +182,14 @@ class TestAuthorNetwort(TestBase):
         """
         Generic setup. Updated to include a test bibcode.
         """
-        super(TestPaperNetwork, self).setUp()
+        super(TestAuthorNetwork, self).setUp()
         self.test_params = dict(query=['{"q": "author:\\"Elliott, J.\\""}'])
 
-    def test_get_reqest_unauthorized_user(self):
+    def test_get_request_unauthorized_user(self):
         """
         Show that you cannot get an author-network for an unauthorized user
         """
-        # Get the author network
         r = self.anonymous_user.post('/vis/author-network', params=self.test_params)
-        # We should get a 401 back
         self.assertEqual(
             r.status_code,
             401,
@@ -204,7 +202,7 @@ class TestAuthorNetwort(TestBase):
         :param user: the user to run the test on
         :type user: object
         """
-        r = user.post('/vis/author-network', params=self.test_params)
+        r = user.post('/vis/author-network', data=json.dumps(self.test_params), headers={'Content-Type': 'application/json'})
 
         self.assertEqual(
             r.status_code,
@@ -257,7 +255,7 @@ class TestAuthorNetwort(TestBase):
             )
 
         expected_attr = ['name', 'children']
-        actual_attr = data['data']['root']
+        actual_attr = data['data']['root'].keys()
         self.assertEqual(
             expected_attr.sort(),
             actual_attr.sort(),
@@ -270,9 +268,8 @@ class TestAuthorNetwort(TestBase):
             list,
             msg='Children of root should be type list, but is type: {}, {}'.format(type(children), children)
         )
-        # Only check that the first entry has the expected attributes
         expected_attr = ['name', 'children']
-        actual_attr = children[0]
+        actual_attr = children[0].keys()
         self.assertEqual(
             expected_attr.sort(),
             actual_attr.sort(),
