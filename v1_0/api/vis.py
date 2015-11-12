@@ -14,14 +14,13 @@ class TestPaperNetwork(TestBase):
         Generic setup. Updated to include a test bibcode.
         """
         super(TestPaperNetwork, self).setUp()
-        self.test_params = dict(q='author:"^Accomazzi, A."')
+        self.test_params = dict(query=['{"q": "author:\\"Elliott, J.\\""}'])
 
-    def test_get_reqest_unauthorized_user(self):
+    def test_get_request_unauthorized_user(self):
         """
         Show that you cannot get a paper-network for an unauthorized user
         """
-        r = self.anonymous_user.get('/vis/paper-network', params=self.test_params)
-        # We should get a 401 back
+        r = self.anonymous_user.post('/vis/paper-network', params=self.test_params)
         self.assertEqual(
             r.status_code,
             401,
@@ -35,7 +34,8 @@ class TestPaperNetwork(TestBase):
         :param user: the user to run the test on
         :type user: object
         """
-        r = user.get('/vis/paper-network', params=self.test_params)
+        import json
+        r = user.post('/vis/paper-network', data=json.dumps(self.test_params), headers={'Content-Type': 'application/json'})
 
         self.assertEqual(
             r.status_code,
@@ -118,7 +118,7 @@ class TestPaperNetwork(TestBase):
                 msg='Content of links should be a dict, but is: {}, {}'.format(type(item), item)
             )
             actual_attr = item.keys()
-            self.assertItemsEqual(
+            self.assertEqual(
                 expected_attr.sort(),
                 actual_attr.sort(),
                 msg='We expect the following attributes {} but do not get them {}'.format(expected_attr, actual_attr)
