@@ -63,16 +63,15 @@ class AnonymousUser(object):
 
 class AuthenticatedUser(AnonymousUser):
     def __init__(self):
-        AnonymousUser.__init__(self)
+        super(AuthenticatedUser, self).__init__()
         self.access_token = config.AUTHENTICATED_USER_ACCESS_TOKEN
 
         
 class BumblebeeAnonymousUser(AnonymousUser):
     def __init__(self):
-        AnonymousUser.__init__(self)
-        # dont want to fail tests 
+        super(BumblebeeAnonymousUser, self).__init__()
         try:
             r = self.get('/accounts/bootstrap')
             self.access_token = r.json()['access_token']
-        except:
-            logging.error('Failed getting access_token for Bumblebee user!')
+        except Exception as error:
+            logging.error('Failed getting access_token for Bumblebee user, may affect the tyest! [{}]'.format(error))
