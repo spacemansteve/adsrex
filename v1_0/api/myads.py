@@ -28,15 +28,15 @@ class TestMyADS(TestBase):
             )
             assert r.status_code == 401
 
-    def test_get_request_anonymous_user_query2svg(self):
+    def test_get_request_random_user_query2svg(self):
         """
-        A user does not need to be authorized to access the query2svg end point
+        A user does not have to be associated to the query to execute the query
         """
-        r = self.anonymous_user.get('/vault/query2svg/113dc6ef2e612ffe1a0de9a16e7f494e')
+        r = self.bumblebee_user.get('/vault/query2svg/c8ed1163e7643cea5e81aaefb4bb2d91')
         self.assertEqual(
             200,
             r.status_code,
-            msg='We expect a 200 for an unauthorized user, but get: {}, {}'.format(r.status_code, r.json())
+            msg='We expect a 200 for an unauthorized user, but get: {}, {}'.format(r.status_code, r.text)
         )
 
     def test_get_configuration_authenticated_user(self):
@@ -47,7 +47,7 @@ class TestMyADS(TestBase):
         self.assertEqual(
             200,
             r.status_code,
-            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r.status_code, r.json())
+            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r.status_code, r.text)
         )
         self.assertIsInstance(
             r.json(),
@@ -104,7 +104,6 @@ class TestMyADS(TestBase):
             r1.json().get('link_server', 'notfoo'),
             msg='Did not find expected key "foo", contains keys: {}'.format(r1.json())
         )
-        self.fail()
 
         r2 = self.authenticated_user.get('/vault/user-data')
         self.assertEqual(
@@ -133,7 +132,7 @@ class TestMyADS(TestBase):
         self.assertEqual(
             200,
             r1.status_code,
-            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r1.status_code, r1.json())
+            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r1.status_code, r1.text)
         )
         self.assertIsInstance(
             r1.json(),
