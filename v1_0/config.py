@@ -32,6 +32,6 @@ ORCID_PASS = ''
 
 # Override config with local_config values
 try:
-    from local_config import *
+    from .local_config import *
 except Exception as error:
     print 'Unexpected exception: {}'.format(error)
