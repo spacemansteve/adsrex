@@ -2,7 +2,8 @@
 Base class for all tests
 """
 import unittest
-from ..user_roles import AnonymousUser, AuthenticatedUser, BumblebeeAnonymousUser
+from ..user_roles import AnonymousUser, AuthenticatedUser,\
+    BumblebeeAnonymousUser
 
 
 class TestBase(unittest.TestCase):

@@ -1,6 +1,6 @@
 # adsrex
 
-Collection of functional tests for ADS Api and Bumblebee.
+Collection of functional tests for the ADS API and ADS Bumblebee.
 
 A minimal configuration is necessary, create a `local_config.py`
 and set the values as described in the `config.py`
