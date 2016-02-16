@@ -1,6 +1,9 @@
+# encoding: utf-8
 """
-Integration tests for the myADS services
+Functional tests for the myADS services
 """
+
+import unittest
 
 from base import TestBase
 
@@ -24,60 +27,78 @@ class TestMyADS(TestBase):
             self.assertEqual(
                 401,
                 r.status_code,
-                msg='We expect a 401 from an unauthorized user, but get: {}, {}'.format(r.status_code, r.json())
+                msg='We expect a 401 from an unauthorized user, but get: {}, {}'
+                    .format(r.status_code, r.json())
             )
-            assert r.status_code == 401
+            self.assertEqual(
+                r.status_code,
+                401,
+                msg='We expect a 401 status code, but we get: {}, {}'
+                    .format(r.status_code, r.text)
+            )
 
+    @unittest.skip('Needs a test user to exist in the database')
     def test_get_request_random_user_query2svg(self):
         """
         A user does not have to be associated to the query to execute the query
         """
-        r = self.bumblebee_user.get('/vault/query2svg/c8ed1163e7643cea5e81aaefb4bb2d91')
+        r = self.bumblebee_user.get(
+            '/vault/query2svg/c8ed1163e7643cea5e81aaefb4bb2d91'
+        )
         self.assertEqual(
             200,
             r.status_code,
-            msg='We expect a 200 for an unauthorized user, but get: {}, {}'.format(r.status_code, r.text)
+            msg='We expect a 200 for an unauthorized user, but get: {}, {}'
+                .format(r.status_code, r.text)
         )
 
     def test_get_configuration_authenticated_user(self):
         """
-        Test an authenticated user can access the configuration end point, that holds the bumblebee config
+        Test an authenticated user can access the configuration end point, that
+        holds the bumblebee config
         """
         r = self.authenticated_user.get('/vault/configuration')
         self.assertEqual(
             200,
             r.status_code,
-            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r.status_code, r.text)
+            msg='We expect a 200 for an authorized user, but get: {}, {}'
+                .format(r.status_code, r.text)
         )
         self.assertIsInstance(
             r.json(),
             dict,
-            msg='Expect the response to be type dict, but is type: {}, {}'.format(type(r.json()), r.json())
+            msg='Expect the response to be type dict, but is type: {}, {}'
+                .format(type(r.json()), r.json())
         )
         self.assertIn(
             'link_servers',
             r.json(),
-            msg='Expect to find "link_servers" in the response, but do not: {}'.format(r.json())
+            msg='Expect to find "link_servers" in the response, but do not: {}'
+                .format(r.json())
         )
 
     def test_get_configuration_link_servers_authenticated_user(self):
         """
-        Test that an authenticated user can access a keyword via the configuration end point
+        Test that an authenticated user can access a keyword via the
+        configuration end point
         """
         r = self.authenticated_user.get('/vault/configuration/link_servers')
         self.assertEqual(
             200,
             r.status_code,
-            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r.status_code, r.text)
+            msg='We expect a 200 for an authorized user, but get: {}, {}'
+                .format(r.status_code, r.text)
         )
         self.assertIsInstance(
             r.json(),
             list,
-            msg='Expect the response to be type list, but is type: {}, {}'.format(type(r.json()), r.json())
+            msg='Expect the response to be type list, but is type: {}, {}'
+                .format(type(r.json()), r.json())
         )
         self.assertTrue(
             all([isinstance(i, dict) for i in r.json()]),
-            msg='All items of the response should be of type dict, but are not: {}'.format(r.json())
+            msg='All items of the response should be of type dict, '
+                'but they are not: {}'.format(r.json())
         )
         expected_keys = ['name', 'link', 'gif']
         for dictionary in r.json():
@@ -85,59 +106,74 @@ class TestMyADS(TestBase):
             self.assertEqual(
                 expected_keys.sort(),
                 actual_keys.sort(),
-                msg='Expected keys {} are not equal to actual keys {}'.format(expected_keys, actual_keys)
+                msg='Expected keys {} are not equal to actual keys {}'
+                    .format(expected_keys, actual_keys)
             )
 
+    @unittest.skip('Needs a test user to exist in the database')
     def test_user_data_work_flow_authenticated_user(self):
         """
-        Test that an authenticated user can save key-values via the user-data end point, and then retrieve them
-        afterwards using the user-data end point
+        Test that an authenticated user can save key-values via the user-data
+        endpoint, and then retrieve them afterwards using the user-data end
+        point
         """
-        r1 = self.authenticated_user.post('/vault/user-data', json={'link_server': 'foo'})
+        r1 = self.authenticated_user.post(
+            '/vault/user-data',
+            json={'link_server': 'foo'}
+        )
+
         self.assertEqual(
             200,
             r1.status_code,
-            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r1.status_code, r1.json())
+            msg='We expect a 200 for an authorized user, but get: {}, {}'
+                .format(r1.status_code, r1.json())
         )
         self.assertEqual(
             'foo',
             r1.json().get('link_server', 'notfoo'),
-            msg='Did not find expected key "foo", contains keys: {}'.format(r1.json())
+            msg='Did not find expected key "foo", contains keys: {}'
+                .format(r1.json())
         )
 
         r2 = self.authenticated_user.get('/vault/user-data')
         self.assertEqual(
             200,
             r2.status_code,
-            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r2.status_code, r2.json())
+            msg='We expect a 200 for an authorized user, but get: {}, {}'
+                .format(r2.status_code, r2.json())
         )
         self.assertIsInstance(
             r2.json(),
             dict,
-            msg='Expect the response to be type dict, but is type: {}, {}'.format(type(r2.json()), r2.json())
+            msg='Expect the response to be type dict, but is type: {}, {}'
+                .format(type(r2.json()), r2.json())
         )
         self.assertEqual(
             'foo',
             r2.json().get('link_server', 'notfoo'),
-            msg='Did not find expected key "foo", contains keys: {}'.format(r2.json())
+            msg='Did not find expected key "foo", contains keys: {}'
+                .format(r2.json())
         )
 
+    @unittest.skip('Needs a test user to exist in the database')
     def test_post_query_authenticated_user(self):
         """
-        Test that an authenticated user can save queries via the query end point, and then execute them in a vanilla
-        style
+        Test that an authenticated user can save queries via the query endpoint,
+        and then execute them in a vanilla style
         """
         # POST the query to be saved
         r1 = self.authenticated_user.post('/vault/query', json={'q': '*:*'})
         self.assertEqual(
             200,
             r1.status_code,
-            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r1.status_code, r1.text)
+            msg='We expect a 200 for an authorized user, but get: {}, {}'
+                .format(r1.status_code, r1.text)
         )
         self.assertIsInstance(
             r1.json(),
             dict,
-            msg='Expect the response to be type dict, but is type: {}, {}'.format(type(r1.json()), r1.json())
+            msg='Expect the response to be type dict, but is type: {}, {}'
+                .format(type(r1.json()), r1.json())
         )
 
         query_id = r1.json()['qid']
@@ -147,74 +183,93 @@ class TestMyADS(TestBase):
         self.assertEqual(
             200,
             r2.status_code,
-            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r2.status_code, r2.json())
+            msg='We expect a 200 for an authorized user, but get: {}, {}'
+                .format(r2.status_code, r2.json())
         )
         self.assertIn(
             'numfound',
             r2.json(),
-            msg='Expected to find "numfound" in response, but did not: {}'.format(r2.json())
+            msg='Expected to find "numfound" in response, but did not: {}'
+                .format(r2.json())
         )
 
         # GET/execute the query that was saved in a vanilla style
-        r3 = self.authenticated_user.get('/vault/execute_query/{}'.format(query_id))
+        r3 = self.authenticated_user.get('/vault/execute_query/{}'
+                                         .format(query_id))
         self.assertEqual(
             200,
             r3.status_code,
-            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r3.status_code, r3.json())
+            msg='We expect a 200 for an authorized user, but get: {}, {}'
+                .format(r3.status_code, r3.json())
         )
         self.assertEqual(
             r3.json()['responseHeader']['params']['q'],
             '*:*',
-            msg='Expected return query to be "*:*" but is {}'.format(r3.json()['responseHeader']['params']['q'])
+            msg='Expected return query to be "*:*" but is {}'
+                .format(r3.json()['responseHeader']['params']['q'])
         )
         self.assertEqual(
             r3.json()['responseHeader']['params']['wt'],
             'json',
-            msg='Expected return field to be "recid" but is {}'.format(r3.json()['responseHeader']['params']['wt'])
+            msg='Expected return field to be "recid" but is {}'
+                .format(r3.json()['responseHeader']['params']['wt'])
         )
         self.assertTrue(
             r3.json()['response'],
-            msg='Expected "response" keyword to be True, but is: {}'.format(r3.json()['response'])
+            msg='Expected "response" keyword to be True, but is: {}'
+                .format(r3.json()['response'])
         )
 
         # GET/execute the query that was saved with extra parameters
-        r4 = self.authenticated_user.get('/vault/execute_query/{}?fl=recid'.format(query_id))
+        r4 = self.authenticated_user.get('/vault/execute_query/{}?fl=recid'
+                                         .format(query_id))
         self.assertEqual(
             200,
             r4.status_code,
-            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r4.status_code, r4.json())
+            msg='We expect a 200 for an authorized user, but get: {}, {}'
+                .format(r4.status_code, r4.json())
         )
         self.assertEqual(
             r4.json()['responseHeader']['params']['q'],
             '*:*',
-            msg='Expected return query to be "*:*" but is {}'.format(r4.json()['responseHeader']['params']['q'])
+            msg='Expected return query to be "*:*" but is {}'
+                .format(r4.json()['responseHeader']['params']['q'])
         )
         self.assertEqual(
             r4.json()['responseHeader']['params']['fl'],
             'recid',
-            msg='Expected return field to be "recid" but is {}'.format(r4.json()['responseHeader']['params']['fl'])
+            msg='Expected return field to be "recid" but is {}'
+                .format(r4.json()['responseHeader']['params']['fl'])
         )
         self.assertTrue(
             r4.json()['response'],
-            msg='Expected "response" keyword to be True, but is: {}'.format(r4.json()['response'])
+            msg='Expected "response" keyword to be True, but is: {}'
+                .format(r4.json()['response'])
         )
 
         # GET/create svg of query that was saved
-        r5 = self.authenticated_user.get('/vault/query2svg/{}'.format(query_id))
+        r5 = self.authenticated_user.get('/vault/query2svg/{}'
+                                         .format(query_id))
         self.assertEqual(
             200,
             r5.status_code,
-            msg='We expect a 200 for an authorized user, but get: {}, {}'.format(r5.status_code, r5.text)
+            msg='We expect a 200 for an authorized user, but get: {}, {}'
+                .format(r5.status_code, r5.text)
         )
-        self.assertIn('svg', r5.text, msg='Expected "svg" in the response, but it is not: {}'.format(r5.text))
+        self.assertIn('svg', r5.text, msg='Expected "svg" in the response, '
+                                          'but it is not: {}'.format(r5.text))
 
-        # Looks like the API overrides the Content-Type after the end point specifies it to "image/svg+xml",
-        # as it always returns as "text/html; charset=utf-8"
-        # If I am right/wrong, this can be modified/uncommented once the issue has been resolved:
+        # Looks like the API overrides the Content-Type after the end point
+        # specifies it to "image/svg+xml", as it always returns as
+        # "text/html; charset=utf-8"
+
+        # If I am right/wrong, this can be modified/uncommented once the issue
+        # has been resolved:
         # https://github.com/adsabs/adsws/issues/83
         #
         #  self.assertEqual(
         #     r5.headers.get('Content-Type'),
         #     'image/svg+xml',
-        #     msg='Expected "image/svg+xml" to be in the response header, it is not: {}'.format(r5.headers.keys())
+        #     msg='Expected "image/svg+xml" to be in the response header, '
+        #         'but it is not: {}'.format(r5.headers.keys())
         # )

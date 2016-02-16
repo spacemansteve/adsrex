@@ -1,7 +1,9 @@
+# encoding: utf-8
 """
-Integration tests for the Recommender service
+Functional tests for the solr-service
 
-'solr-service' is synonymous with 'search' when looking at the end points on the API
+'solr-service' is synonymous with 'search' when looking at the end points on the
+ API
 """
 
 import time
@@ -17,11 +19,16 @@ class TestSolr(TestBase):
         Check the response contains Headers and the limits are there
         """
 
-        r = self.authenticated_user.get('/search/query', params={'q': 'title:"{}"'.format(time.time())})
+        r = self.authenticated_user.get(
+            '/search/query',
+            params={'q': 'title:"{}"'.format(time.time())}
+        )
         self.assertEqual('5000', r.headers['x-ratelimit-limit'])
 
         old_limit = int(r.headers['x-ratelimit-remaining'])
-        r = self.authenticated_user.get('/search/query', params={'q': 'title:"{}"'.format(time.time())})
-
+        r = self.authenticated_user.get(
+            '/search/query',
+            params={'q': 'title:"{}"'.format(time.time())}
+        )
         self.assertEqual(str(old_limit-1), r.headers['x-ratelimit-remaining'])
         self.assertIn('x-ratelimit-reset', r.headers)

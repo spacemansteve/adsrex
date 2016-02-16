@@ -3,9 +3,6 @@
 Core tests of the ADS web services
 """
 
-import time
-import unittest
-
 from base import TestBase
 
 
@@ -15,8 +12,8 @@ class TestCore(TestBase):
 
     XXX / TODO: response from /resources
 
-    the response is organized from the perspective of the ADS developer/ API maintainer but API users probably expect to
-    see something like:
+    the response is organized from the perspective of the ADS developer/API
+    maintainer but API users probably expect to see something like:
     {
     '/v1': {
        'endpoints': [
@@ -32,8 +29,8 @@ class TestCore(TestBase):
      }
     }
 
-    If we run two versions of the API alongside, I don't see how the current structure can communicate two different
-    'bases'
+    If we run two versions of the API alongside, I don't see how the current
+    structure can communicate two different 'bases'
     """
 
     def test_status(self):
@@ -69,7 +66,8 @@ class TestCore(TestBase):
 
     def test_resources_accounts(self):
         """
-        Test that the expected resources are returned from the api accounts endpoints
+        Test that the expected resources are returned from the api accounts
+        endpoints
         """
 
         r = self.anonymous_user.get(self.anonymous_user.api_base + '/resources')
@@ -103,7 +101,8 @@ class TestCore(TestBase):
 
     def test_resources_feedback(self):
         """
-        Test that the expected resources are returned from the api accounts endpoints
+        Test that the expected resources are returned from the api accounts
+        endpoints
         """
 
         r = self.anonymous_user.get(self.anonymous_user.api_base + '/resources')
@@ -207,11 +206,17 @@ class TestCore(TestBase):
         # repeating the bootstrap request should give you the
         # same access token
         for x in xrange(5):
-            r = self.anonymous_user.get('/accounts/bootstrap', headers={'Cookie': b_cookie})
+            r = self.anonymous_user.get(
+                '/accounts/bootstrap',
+                headers={'Cookie': b_cookie}
+            )
             self.assertEqual(r.json()['access_token'], b['access_token'])
 
         for x in xrange(5):
-            r = self.authenticated_user.get('/accounts/bootstrap', headers={'Cookie': a_cookie})
+            r = self.authenticated_user.get(
+                '/accounts/bootstrap',
+                headers={'Cookie': a_cookie}
+            )
             self.assertEqual(r.json()['access_token'], a['access_token'])
 
     def test_crossx_headers(self):
