@@ -8,14 +8,14 @@ params['q'] = 'author:"Accomazzi,A"'
 class AuthorNetworkTest(TestCase):
     def test_anonymous_user(self):
         # Get the author network
-        r = anonymous_user.get('/vis/author-network', params=params)
+        r = anonymous_user.post('/vis/author-network', params=params)
         # We should get a 401 back
         self.assertEqual(r.status_code, 401)
 
     def check_author_network(self, user=authenticated_user):
         ## Examine the paper network
         # Retrieve results for our query in 'params'
-        r = user.get('/vis/author-network', params=params)
+        r = user.post('/vis/author-network', params=params)
         # We should get a 200 back
         self.assertEqual(r.status_code, 200)
         # Now we'll test the contents of what was sent back

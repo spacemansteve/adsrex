@@ -8,13 +8,13 @@ params['q'] = 'author:"Accomazzi,A" year:1991-1993'
 class VisServiceTest(TestCase):
     def test_anonymous_user(self):
         # Get the word cloud
-        r = anonymous_user.get('/vis/word-cloud', params=params)
+        r = anonymous_user.post('/vis/word-cloud', params=params)
         # This should get a 401 back
         self.assertEqual(r.status_code, 401)
     
     def check_word_cloud(self, user=authenticated_user):
         # Retrieve results for our query in 'params'
-        r = user.get('/vis/word-cloud', params=params)
+        r = user.post('/vis/word-cloud', params=params)
         # We should get a 200 back
         self.assertEqual(r.status_code, 200)
         # Now we'll test the contents of what was sent back
