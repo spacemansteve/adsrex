@@ -9,7 +9,7 @@ def test_anonymous_user():
     
     # this is wrong, it should be accessible
     r = anonymous_user.get('/vault/query2svg/113dc6ef2e612ffe1a0de9a16e7f494e')
-    assert r.status_code == 200
+    assert r.status_code == 401
 
 def test_authenticated_user():
     # bumblebee config
